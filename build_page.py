@@ -1,0 +1,538 @@
+#!/usr/bin/env python3
+"""Build a single-page browser for all used Bechstein instruments.
+
+    python3 build_page.py            -> bechstein_gebrauchte.html (artifact: photos inlined)
+    python3 build_page.py --pages    -> docs/index.html (GitHub Pages: photos hotlinked,
+                                        seller's prose left on the seller's own pages)
+"""
+import json, re, html, base64, hashlib, os, sys
+
+PAGES = "--pages" in sys.argv
+
+RAW = json.load(open("instruments.json"))
+
+
+CACHE = json.load(open("thumbs.json")) if os.path.exists("thumbs.json") else {}
+
+
+def thumb(r):
+    """Inline the product photo — the artifact CSP blocks remote image hosts.
+
+    Encoded thumbnails live in thumbs.json so a rebuild doesn't re-download 98 MB
+    of full-size photos; regenerate them with fetch_thumbs.py when listings change.
+    The Pages build never copies a photo: it points at bechstein.com's own URL.
+    """
+    if PAGES:
+        return r["image"]
+    if r["url"] in CACHE:
+        return CACHE[r["url"]]
+    p = "thumb/%s.webp" % hashlib.md5(r["image"].encode()).hexdigest()[:12]
+    if not os.path.exists(p):
+        return ""
+    return "data:image/webp;base64," + base64.b64encode(open(p, "rb").read()).decode()
+
+BRAND_FIX = {
+    "c. bechstein": "C. Bechstein", "c.bechstein": "C. Bechstein",
+    "bechstein": "C. Bechstein", "c. bechstein concert": "C. Bechstein",
+    "c. bechstein academy": "C. Bechstein",
+    "w. hoffmann": "W. Hoffmann", "w.hoffmann": "W. Hoffmann",
+    "zimmermann": "Zimmermann", "yamaha": "Yamaha", "kawai": "Kawai",
+    "schimmel": "Schimmel", "steinway & sons": "Steinway & Sons",
+    "casio": "Casio", "seiler": "Seiler",
+}
+
+FIELD_RE = re.compile(
+    r"(Modell|Ausf(?:ü|ue)hrung|Baujahr|Standort|Neu?r?preis(?:\s*ca\.?)?|Preis)\s*:?\s*"
+    r"[^:]*?(?=\s+(?:Modell|Ausf(?:ü|ue)hrung|Baujahr|Standort|Neu?r?preis|Preis)\s*:|$)")
+
+
+def blurb(r):
+    """Drop the label:value block Bielefeld/Osnabrück repeat — those fields have their own slots."""
+    t = r["description"] or r["body"]
+    if re.search(r"(Modell|Ausf(?:ü|ue)hrung)\s*:", t):
+        t = FIELD_RE.sub("", t)
+    t = re.sub(r"\s{2,}", " ", t).strip(" -·|")
+    return t[:220]
+
+
+items = []
+for r in RAW:
+    brand = BRAND_FIX.get(r["brand"].strip().lower(), r["brand"].strip())
+    sub = re.sub(r"\s*(Neu?r?preis|Preis)\s*(ca)?\.?$", "", r["sublocation"]).strip()
+    if sub == r["city"]:
+        sub = ""
+    items.append({
+        "c": r["city"], "s": sub, "b": brand, "m": r["model"],
+        "k": r["category"], "p": r["price"], "u": r["uvp"], "r": r["rent"],
+        "y": r["year"], "f": r["finish"][:60],
+        "w": r["width_cm"], "h": r["height_cm"], "d": r["depth_cm"],
+        # the seller's sales copy stays on the seller's page in the public build
+        "t": "" if PAGES else blurb(r),
+        "i": thumb(r), "l": r["url"],
+    })
+items.sort(key=lambda x: (x["c"], x["k"], x["p"]))
+
+DATA = json.dumps(items, ensure_ascii=True, separators=(",", ":"))
+
+CSS = """
+:root{
+  --ink:#191512; --ink-2:#4a4038; --ink-3:#7b6f63;
+  --ground:#f7f4ef; --card:#fffdfa; --line:#e0d8cc;
+  --brass:#8a6a24; --brass-soft:#f0e6d0;
+  --felt:#8f2f2c; --sale:#2f6b48;
+  --shadow:0 1px 2px rgba(40,30,16,.06),0 8px 24px -14px rgba(40,30,16,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ink:#f2ece2; --ink-2:#c3b8a8; --ink-3:#8d8275;
+    --ground:#14120f; --card:#1e1a16; --line:#332d26;
+    --brass:#d9b25f; --brass-soft:#3a2f18;
+    --felt:#d97a6c; --sale:#7bbd92;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#f2ece2; --ink-2:#c3b8a8; --ink-3:#8d8275;
+  --ground:#14120f; --card:#1e1a16; --line:#332d26;
+  --brass:#d9b25f; --brass-soft:#3a2f18;
+  --felt:#d97a6c; --sale:#7bbd92;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -16px rgba(0,0,0,.8);
+}
+:root[data-theme="light"]{
+  --ink:#191512; --ink-2:#4a4038; --ink-3:#7b6f63;
+  --ground:#f7f4ef; --card:#fffdfa; --line:#e0d8cc;
+  --brass:#8a6a24; --brass-soft:#f0e6d0;
+  --felt:#8f2f2c; --sale:#2f6b48;
+  --shadow:0 1px 2px rgba(40,30,16,.06),0 8px 24px -14px rgba(40,30,16,.35);
+}
+
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+.ui{font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px;}
+
+header.top{border-bottom:1px solid var(--line);padding:44px 0 26px;}
+.eyebrow{font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);font-weight:600;}
+h1{font-size:clamp(30px,4.4vw,48px);line-height:1.08;font-weight:600;margin:10px 0 12px;text-wrap:balance;letter-spacing:-.01em;}
+.lede{color:var(--ink-2);max-width:62ch;font-size:17px;}
+.stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:24px;}
+.stat .n{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;}
+.stat .k{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);}
+
+.controls{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--ground) 92%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:14px 0;}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+.row + .row{margin-top:10px;}
+label.f{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-right:2px;}
+input[type=search],select{font:inherit;font-size:14px;font-family:ui-sans-serif,-apple-system,sans-serif;
+  background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:7px 10px;}
+input[type=search]{min-width:210px;flex:1 1 210px;max-width:340px;}
+.chip{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:13px;cursor:pointer;
+  background:transparent;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;
+  padding:5px 12px;transition:.14s;}
+.chip:hover{border-color:var(--brass);color:var(--ink);}
+.chip[aria-pressed="true"]{background:var(--brass-soft);border-color:var(--brass);color:var(--ink);font-weight:600;}
+.chip .ct{color:var(--ink-3);font-variant-numeric:tabular-nums;margin-left:5px;font-weight:400;}
+.chip.more{border-style:dashed;color:var(--ink-3);}
+.chip.reset{border-color:var(--felt);color:var(--felt);}
+.chip.reset:hover{background:var(--felt);color:var(--card);}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px;}
+
+.hint{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:11.5px;color:var(--ink-3);margin-top:8px;}
+.news{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:13.5px;color:var(--ink);
+  margin-top:22px;padding:13px 16px;border:1px solid var(--brass);border-left-width:3px;
+  border-radius:8px;background:var(--brass-soft);
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;}
+.news:empty{display:none;}
+.news.first,.news.quiet{background:transparent;border-color:var(--line);color:var(--ink-3);}
+.news .gone{width:100%;color:var(--ink-3);font-size:12px;}
+.flag{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:.04em;padding:5px 12px;color:var(--card);background:var(--brass);}
+.flag.down{background:var(--sale);}
+.flag.up{background:var(--felt);}
+.card.is-new{border-color:var(--brass);}
+.card.is-repriced{border-color:var(--sale);}
+.count{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:13px;color:var(--ink-3);
+  padding:18px 0 6px;border-bottom:1px solid var(--line);margin-bottom:22px;}
+
+.grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));padding-bottom:60px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  display:flex;flex-direction:column;box-shadow:var(--shadow);transition:.16s;}
+.card:hover{transform:translateY(-2px);border-color:var(--brass);}
+.thumb{aspect-ratio:4/3;background:var(--brass-soft);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.thumb img{width:100%;height:100%;object-fit:cover;}
+/* hotlinked photo unreachable — show a quiet placeholder, never a broken-image icon */
+.thumb.nophoto img{display:none;}
+.thumb.nophoto::after{content:"Foto beim Centrum ansehen";font-family:ui-sans-serif,-apple-system,sans-serif;
+  font-size:11.5px;letter-spacing:.05em;color:var(--brass);}
+.body{padding:15px 16px 17px;display:flex;flex-direction:column;gap:7px;flex:1;}
+.brand{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:11px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--brass);font-weight:600;}
+.model{font-size:19px;font-weight:600;line-height:1.2;}
+.meta{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:12.5px;color:var(--ink-3);
+  display:flex;flex-wrap:wrap;gap:5px 9px;}
+.kind{display:inline-flex;align-items:center;gap:5px;}
+.kind::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--brass);}
+.kind.fl::before{border-radius:50%;background:var(--felt);}
+.blurb{font-size:13.5px;color:var(--ink-2);line-height:1.45;}
+.priceline{margin-top:auto;padding-top:10px;border-top:1px solid var(--line);
+  display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
+.price{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;}
+.uvp{font-size:13px;color:var(--ink-3);text-decoration:line-through;font-variant-numeric:tabular-nums;}
+.save{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:11px;font-weight:600;color:var(--sale);}
+.rent{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:11.5px;color:var(--ink-3);width:100%;}
+a.go{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:12.5px;color:var(--brass);
+  text-decoration:none;font-weight:600;padding:0 16px 15px;}
+a.go:hover{text-decoration:underline;}
+footer{border-top:1px solid var(--line);padding:22px 0 50px;font-family:ui-sans-serif,-apple-system,sans-serif;
+  font-size:12.5px;color:var(--ink-3);}
+footer p{max-width:78ch;}
+footer .legal{margin-top:10px;font-size:11.5px;}
+.empty{padding:60px 0;text-align:center;color:var(--ink-3);}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+"""
+
+JS = """
+const D=__DATA__;
+const $=s=>document.querySelector(s);
+const eur=n=>n?n.toLocaleString('de-DE')+' \\u20ac':'auf Anfrage';
+const KEY='bechstein-gebrauchte-filter-v1';
+const SEEN='bechstein-gebrauchte-seen-v1';
+const state={cities:new Set(),brands:new Set(),kind:'',q:'',max:0,sort:'price-asc',
+  showAllBrands:false,onlyChanged:false};
+
+/* --- what changed since the visitor last opened this page --- */
+const changes={fresh:[],cheaper:[],dearer:[],gone:[]};
+let lastSeen=0, firstVisit=true;
+
+function fingerprint(){
+  let h=0; D.forEach(x=>{const s=x.l+':'+x.p;
+    for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}});
+  return h;
+}
+
+function diff(){
+  const fp=fingerprint(); let prev=null;
+  try{prev=JSON.parse(localStorage.getItem(SEEN));}catch(e){}
+  const items={}; D.forEach(x=>{items[x.l]=[x.p,x.b,x.m,x.c];});
+  if(prev&&prev.items){
+    firstVisit=false; lastSeen=prev.t||0;
+    if(prev.fp===fp&&prev.marks){
+      // same listing as last time — keep the marks so a reload doesn't erase them
+      D.forEach(x=>{const m=prev.marks[x.l]; if(m){x._new=m[0]===1; x._old=m[1]||0;}});
+      (prev.gone||[]).forEach(g=>changes.gone.push(g));
+      lastSeen=prev.seenAt||prev.t||0;
+    }else{
+      D.forEach(x=>{const p=prev.items[x.l];
+        if(!p)x._new=true; else if(p[0]!==x.p)x._old=p[0];});
+      Object.keys(prev.items).forEach(u=>{if(!(u in items))changes.gone.push(prev.items[u]);});
+    }
+  }
+  D.forEach(x=>{
+    if(x._new)changes.fresh.push(x);
+    else if(x._old)(x.p<x._old?changes.cheaper:changes.dearer).push(x);
+  });
+  const marks={};
+  D.forEach(x=>{if(x._new||x._old)marks[x.l]=[x._new?1:0,x._old||0];});
+  try{localStorage.setItem(SEEN,JSON.stringify(
+    {fp:fp,t:Date.now(),seenAt:firstVisit?Date.now():lastSeen,items:items,marks:marks,gone:changes.gone}));}catch(e){}
+}
+
+function changed(x){return !!(x._new||x._old);}
+
+function save(){
+  const s=JSON.stringify({c:[...state.cities],b:[...state.brands],k:state.kind,
+    q:state.q,m:state.max,s:state.sort,ch:state.onlyChanged?1:0});
+  try{localStorage.setItem(KEY,s);}catch(e){}
+  try{history.replaceState(null,'','#'+encodeURIComponent(s));}catch(e){}
+}
+
+function load(){
+  let s=null;
+  if(location.hash.length>1){try{s=JSON.parse(decodeURIComponent(location.hash.slice(1)));}catch(e){}}
+  if(!s){try{s=JSON.parse(localStorage.getItem(KEY));}catch(e){}}
+  if(!s)return;
+  (s.c||[]).forEach(c=>state.cities.add(c));
+  (s.b||[]).forEach(b=>state.brands.add(b));
+  state.kind=s.k||''; state.q=s.q||''; state.max=+s.m||0; state.sort=s.s||'price-asc';
+  state.onlyChanged=!!s.ch;
+  if(state.brands.size)state.showAllBrands=true;
+}
+
+function counts(key,pool){const m={};pool.forEach(x=>{m[x[key]]=(m[x[key]]||0)+1});return m;}
+
+const BRAND_COUNTS=counts('b',D);
+const BRANDS=Object.keys(BRAND_COUNTS)
+  .sort((a,b)=>BRAND_COUNTS[b]-BRAND_COUNTS[a]||a.localeCompare(b,'de'));
+const BRANDS_SHOWN=10;
+
+function build(){
+  const cityCounts=counts('c',D);
+  const cities=Object.keys(cityCounts).sort((a,b)=>a.localeCompare(b,'de'));
+  $('#cities').innerHTML=['<button class="chip" data-city="" aria-pressed="true">Alle Standorte'
+    +'<span class="ct">'+D.length+'</span></button>']
+    .concat(cities.map(c=>'<button class="chip" data-city="'+c+'" aria-pressed="false">'+c
+      +'<span class="ct">'+cityCounts[c]+'</span></button>')).join('');
+  paintBrands();
+}
+
+function paintBrands(){
+  const shown=state.showAllBrands?BRANDS:BRANDS.slice(0,BRANDS_SHOWN);
+  const rest=BRANDS.length-shown.length;
+  $('#brands').innerHTML='<button class="chip" data-brand="">Alle Marken<span class="ct">'
+    +D.length+'</span></button>'
+    +shown.map(b=>'<button class="chip" data-brand="'+b+'">'+b
+      +'<span class="ct">'+BRAND_COUNTS[b]+'</span></button>').join('')
+    +(rest>0?'<button class="chip more" data-more="1">+'+rest+' weitere Marken</button>'
+      :(state.showAllBrands?'<button class="chip more" data-more="0">weniger zeigen</button>':''));
+  document.querySelectorAll('[data-brand]').forEach(n=>{
+    const b=n.dataset.brand;
+    n.setAttribute('aria-pressed', b? state.brands.has(b) : state.brands.size===0);
+  });
+}
+
+function match(x){
+  if(state.cities.size&&!state.cities.has(x.c))return false;
+  if(state.kind&&x.k!==state.kind)return false;
+  if(state.brands.size&&!state.brands.has(x.b))return false;
+  if(state.onlyChanged&&!changed(x))return false;
+  if(state.max&&(!x.p||x.p>state.max))return false;
+  if(state.q){const s=(x.b+' '+x.m+' '+x.c+' '+x.f+' '+x.t+' '+x.y).toLowerCase();
+    if(!state.q.split(/\\s+/).every(w=>s.includes(w)))return false;}
+  return true;
+}
+
+const SORTS={
+ 'price-asc':(a,b)=>(a.p||1e9)-(b.p||1e9),
+ 'price-desc':(a,b)=>(b.p||0)-(a.p||0),
+ 'year-desc':(a,b)=>(b.y||0)-(a.y||0),
+ 'year-asc':(a,b)=>(a.y||9999)-(b.y||9999),
+ 'city':(a,b)=>a.c.localeCompare(b.c,'de')||(a.p||1e9)-(b.p||1e9),
+ 'save':(a,b)=>((b.u&&b.p)?(b.u-b.p)/b.u:0)-((a.u&&a.p)?(a.u-a.p)/a.u:0),
+ 'changed':(a,b)=>(changed(b)?1:0)-(changed(a)?1:0)||(a.p||1e9)-(b.p||1e9)
+};
+
+function card(x){
+  const save=(x.u&&x.p&&x.u>x.p)?Math.round((1-x.p/x.u)*100):0;
+  const dims=[x.w&&x.w+' cm breit',x.h&&x.h+' cm hoch'].filter(Boolean).join(' \\u00b7 ');
+  const down=x._old&&x.p<x._old;
+  const flag=x._new?'<span class="flag new">Neu seit Ihrem letzten Besuch</span>'
+    :x._old?'<span class="flag '+(down?'down':'up')+'">Preis '+(down?'gesenkt':'erh\\u00f6ht')
+      +': vorher '+eur(x._old)+'</span>':'';
+  return '<article class="card'+(x._new?' is-new':x._old?' is-repriced':'')+'">'
+   +flag
+   +'<div class="thumb"><img loading="lazy" src="'+x.i+'" alt="'+x.b+' '+x.m
+     +'" onerror="this.closest(\\'.thumb\\').classList.add(\\'nophoto\\')"></div>'
+   +'<div class="body">'
+   +'<div class="brand">'+x.b+'</div>'
+   +'<div class="model">'+x.m+'</div>'
+   +'<div class="meta"><span class="kind'+(x.k==='Fl\\u00fcgel'?' fl':'')+'">'+x.k+'</span>'
+     +'<span>'+x.c+(x.s?' \\u2192 '+x.s:'')+'</span>'
+     +(x.y?'<span>Baujahr '+x.y+'</span>':'')
+     +(x.f?'<span>'+x.f+'</span>':'')
+     +(dims?'<span>'+dims+'</span>':'')+'</div>'
+   +(x.t?'<p class="blurb">'+x.t+'</p>':'')
+   +'<div class="priceline"><span class="price">'+eur(x.p)+'</span>'
+     +(x.u&&x.u>x.p?'<span class="uvp">'+eur(x.u)+'</span>':'')
+     +(save?'<span class="save">\\u2212'+save+'\\u2009%</span>':'')
+     +(x.r?'<span class="rent">oder Miete ab '+eur(x.r)+' / Monat</span>':'')
+   +'</div></div>'
+   +'<a class="go" href="'+x.l+'" target="_blank" rel="noopener">Zum Angebot \\u2197</a>'
+   +'</article>';
+}
+
+function render(){
+  const list=D.filter(match).sort(SORTS[state.sort]);
+  const kl=list.filter(x=>x.k==='Klavier').length, fl=list.length-kl;
+  const prices=list.map(x=>x.p).filter(Boolean);
+  const where=state.cities.size
+    ?'in '+[...state.cities].sort((a,b)=>a.localeCompare(b,'de')).join(', ')
+    :'an allen Standorten';
+  const brandNote=state.brands.size
+    ?' \\u00b7 '+[...state.brands].sort((a,b)=>a.localeCompare(b,'de')).join(', '):'';
+  $('#count').textContent=list.length+' Instrumente '+where+' \\u00b7 '+kl+' Klaviere, '+fl+' Fl\\u00fcgel'
+    +brandNote
+    +(prices.length?' \\u00b7 '+eur(Math.min(...prices))+' bis '+eur(Math.max(...prices)):'');
+  $('#grid').innerHTML=list.length?list.map(card).join('')
+    :'<p class="empty">Keine Instrumente f\\u00fcr diese Auswahl. Setzen Sie einen Filter zur\\u00fcck.</p>';
+  const active=state.cities.size||state.brands.size||state.kind||state.q||state.max
+    ||state.sort!=='price-asc'||state.onlyChanged;
+  $('#reset').hidden=!active;
+  save();
+}
+
+function paintBanner(){
+  const n=changes.fresh.length,c=changes.cheaper.length,d=changes.dearer.length,g=changes.gone.length;
+  const box=$('#news');
+  if(firstVisit){
+    box.className='news first';
+    box.innerHTML='<p>Erster Besuch \\u2014 ab jetzt markiert die Seite neue Angebote und '
+      +'Preis\\u00e4nderungen gegen\\u00fcber Ihrem letzten Aufruf.</p>';
+    return;}
+  if(!(n+c+d+g)){
+    box.className='news quiet';
+    box.innerHTML='<p>Keine \\u00c4nderungen seit Ihrem letzten Besuch'
+      +(lastSeen?' am '+new Date(lastSeen).toLocaleDateString('de-DE',
+        {day:'numeric',month:'long',year:'numeric'}):'')+'.</p>';
+    return;}
+  const parts=[];
+  if(n)parts.push(n+(n===1?' neues Angebot':' neue Angebote'));
+  if(c)parts.push(c+(c===1?' Preissenkung':' Preissenkungen'));
+  if(d)parts.push(d+(d===1?' Preiserh\\u00f6hung':' Preiserh\\u00f6hungen'));
+  if(g)parts.push(g+' nicht mehr gelistet');
+  box.className='news';
+  box.innerHTML='<p><strong>Seit Ihrem letzten Besuch'
+    +(lastSeen?' am '+new Date(lastSeen).toLocaleDateString('de-DE',
+      {day:'numeric',month:'long',year:'numeric'}):'')+':</strong> '+parts.join(' \\u00b7 ')+'</p>'
+    +((n+c+d)?'<button class="chip" id="onlychanged" aria-pressed="'+state.onlyChanged
+      +'">Nur \\u00c4nderungen zeigen</button>':'')
+    +(g?'<p class="gone">Verschwunden: '+changes.gone.map(a=>a[1]+' '+a[2]+' ('+a[3]+')')
+      .join(' \\u00b7 ')+'</p>':'');
+}
+
+function paintCities(){
+  document.querySelectorAll('[data-city]').forEach(n=>{
+    const c=n.dataset.city;
+    n.setAttribute('aria-pressed', c? state.cities.has(c) : state.cities.size===0);
+  });
+}
+
+function paintKind(){
+  document.querySelectorAll('[data-kind]').forEach(n=>
+    n.setAttribute('aria-pressed', n.dataset.kind===state.kind));
+}
+
+function toggle(set,v){ if(set.has(v)) set.delete(v); else set.add(v); }
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-city]'); if(b){
+    const c=b.dataset.city;
+    if(!c) state.cities.clear(); else toggle(state.cities,c);
+    paintCities(); render(); return;}
+  const m=e.target.closest('[data-more]'); if(m){
+    state.showAllBrands=m.dataset.more==='1'; paintBrands(); return;}
+  const br=e.target.closest('[data-brand]'); if(br){
+    const v=br.dataset.brand;
+    if(!v) state.brands.clear(); else toggle(state.brands,v);
+    paintBrands(); render(); return;}
+  const k=e.target.closest('[data-kind]'); if(k){
+    state.kind=k.dataset.kind; paintKind(); render(); return;}
+  if(e.target.closest('#onlychanged')){
+    state.onlyChanged=!state.onlyChanged; paintBanner(); render(); return;}
+  if(e.target.closest('#reset')){
+    state.cities.clear(); state.brands.clear();
+    state.kind=''; state.q=''; state.max=0; state.sort='price-asc'; state.onlyChanged=false;
+    paintBanner();
+    $('#q').value=''; $('#max').value='0'; $('#sort').value='price-asc';
+    paintCities(); paintBrands(); paintKind(); render();}
+});
+$('#sort').addEventListener('change',e=>{state.sort=e.target.value;render();});
+$('#max').addEventListener('change',e=>{state.max=+e.target.value;render();});
+$('#q').addEventListener('input',e=>{state.q=e.target.value.trim().toLowerCase();render();});
+
+load();
+diff();
+build();
+$('#q').value=state.q; $('#max').value=String(state.max); $('#sort').value=state.sort;
+paintCities(); paintKind(); paintBanner();
+render();
+"""
+
+
+MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli",
+          "August", "September", "Oktober", "November", "Dezember"]
+d = __import__("datetime").date.fromtimestamp(os.path.getmtime("instruments.json"))
+STAMP = "%d. %s %d" % (d.day, MONTHS[d.month - 1], d.year)
+
+FOOTER_EXTRA = """<p class="legal">Private, nicht-kommerzielle Übersicht ohne Verbindung zur
+  C. Bechstein Pianoforte AG. Alle Angebote, Fotos und Marken gehören den jeweiligen Centren;
+  die Fotos werden direkt von bechstein.com geladen und hier nicht gespeichert. Jede Karte
+  verlinkt auf die Originalseite, auf der Beschreibung, Details und Kontakt stehen.</p>""" \
+    if PAGES else ""
+
+body = f"""<title>Gebrauchte Klaviere &amp; Flügel · alle C. Bechstein Centren</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>{CSS}</style>
+
+<header class="top"><div class="wrap">
+  <div class="eyebrow">C. Bechstein Centren · Deutschland</div>
+  <h1>Alle gebrauchten Klaviere und Flügel — an einem Ort</h1>
+  <p class="lede">Der Bestand aller deutschen C. Bechstein Centren und Partner-Centren,
+  von {len(items)} Einzelseiten auf bechstein.com zusammengetragen und hier durchsuchbar gemacht.
+  Preise und Verfügbarkeit stammen direkt von den Angebotsseiten.</p>
+  <div class="stats">
+    <div class="stat"><div class="n">{len(items)}</div><div class="k">Instrumente</div></div>
+    <div class="stat"><div class="n">{sum(1 for x in items if x['k']=='Klavier')}</div><div class="k">Klaviere</div></div>
+    <div class="stat"><div class="n">{sum(1 for x in items if x['k']=='Flügel')}</div><div class="k">Flügel</div></div>
+    <div class="stat"><div class="n">{len(set(x['c'] for x in items))}</div><div class="k">Standorte</div></div>
+    <div class="stat"><div class="n">{min(x['p'] for x in items if x['p']):,}</div><div class="k">Günstigstes (€)</div></div>
+  </div>
+</div></header>
+
+<div class="controls"><div class="wrap">
+  <div class="row" id="cities"></div>
+  <div class="row" id="brands"></div>
+  <p class="hint">Standorte und Marken sind mehrfach wählbar — anklicken zum Hinzufügen, erneut
+  klicken zum Entfernen. Ihre Auswahl bleibt beim nächsten Besuch erhalten.</p>
+  <div class="row">
+    <button class="chip" data-kind="" aria-pressed="true">Alle Typen</button>
+    <button class="chip" data-kind="Klavier" aria-pressed="false">Nur Klaviere</button>
+    <button class="chip" data-kind="Flügel" aria-pressed="false">Nur Flügel</button>
+    <select id="max" aria-label="Preisgrenze">
+      <option value="0">Preis egal</option>
+      <option value="5000">bis 5.000 €</option>
+      <option value="10000">bis 10.000 €</option>
+      <option value="20000">bis 20.000 €</option>
+      <option value="50000">bis 50.000 €</option>
+    </select>
+    <select id="sort" aria-label="Sortierung">
+      <option value="price-asc">Preis aufsteigend</option>
+      <option value="price-desc">Preis absteigend</option>
+      <option value="year-desc">Baujahr, neueste zuerst</option>
+      <option value="year-asc">Baujahr, älteste zuerst</option>
+      <option value="city">Standort</option>
+      <option value="save">Größter Preisvorteil</option>
+      <option value="changed">Änderungen zuerst</option>
+    </select>
+    <input type="search" id="q" placeholder="Suche: Modell, Farbe, Silent …" aria-label="Suche">
+    <button class="chip reset" id="reset" hidden>Filter zurücksetzen</button>
+  </div>
+</div></div>
+
+<div class="wrap">
+  <div class="news" id="news"></div>
+  <div class="count ui" id="count"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<footer><div class="wrap">
+  <p>Daten am {STAMP} von bechstein.com abgerufen · Preise und Verfügbarkeit können sich jederzeit
+  ändern, Zwischenverkauf vorbehalten. Maßgeblich ist immer das Angebot des jeweiligen Centrums.</p>
+  {FOOTER_EXTRA}
+</div></footer>
+
+<script>{JS.replace("__DATA__", DATA)}</script>
+"""
+
+if PAGES:
+    out = "docs/index.html"
+    os.makedirs("docs", exist_ok=True)
+    # the artifact host supplies the doctype, head and a CSS reset; Pages needs our own
+    head, markup = body.split("</style>", 1)
+    page = ('<!doctype html>\n<html lang="de">\n<head>\n<meta charset="utf-8">\n'
+            '<meta name="description" content="Alle gebrauchten Klaviere und Flügel der '
+            'deutschen C. Bechstein Centren auf einer Seite — filter- und sortierbar.">\n'
+            + head.replace("<style>", "<style>\n*{margin:0;padding:0;box-sizing:border-box}\n", 1)
+            + "</style>\n</head>\n<body>" + markup + "</body>\n</html>\n")
+else:
+    out = "bechstein_gebrauchte.html"
+    page = body
+
+# escape non-ASCII so the page renders correctly whatever charset the host declares
+open(out, "w").write(page.encode("ascii", "xmlcharrefreplace").decode())
+print("wrote", out, len(page), "bytes")
