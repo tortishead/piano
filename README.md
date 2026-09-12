@@ -3,7 +3,7 @@
 Every used piano and grand offered by the German C. Bechstein Centren and Partner-Centren,
 scraped from their individual listing pages and put on one filterable page.
 
-**Live:** https://USERNAME.github.io/REPO/
+**Live:** https://tortishead.github.io/piano/
 
 ## What it does
 
@@ -22,7 +22,7 @@ python3 build_page.py         # -> bechstein_gebrauchte.html (photos inlined, ne
 python3 fetch_thumbs.py       # top up thumbs.json for the inlined build (macOS: sips + cwebp)
 ```
 
-`.github/workflows/refresh.yml` re-runs the scrape weekly and commits when the listings move,
+`.github/workflows/refresh.yml` re-runs the scrape every six hours and commits when the listings move,
 which is what makes the "since your last visit" marks meaningful.
 
 ## Scope and attribution

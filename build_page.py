@@ -198,7 +198,10 @@ footer .legal{margin-top:10px;font-size:11.5px;}
 """
 
 JS = """
-const D=__DATA__;
+/* The Pages build ships an empty D and pulls data.json on load, so a refresh of
+   the listings never has to rebuild the HTML. The artifact build inlines D. */
+let D=__DATA__;
+const SRC=__SRC__;
 const $=s=>document.querySelector(s);
 const eur=n=>n?n.toLocaleString('de-DE')+' \\u20ac':'auf Anfrage';
 const KEY='bechstein-gebrauchte-filter-v1';
@@ -208,6 +211,7 @@ const state={cities:new Set(),brands:new Set(),kind:'',q:'',max:0,sort:'price-as
 
 /* --- what changed since the visitor last opened this page --- */
 const changes={fresh:[],cheaper:[],dearer:[],gone:[]};
+const GRACE=30*60*1000;   // a reload right after a visit still shows the marks
 let lastSeen=0, firstVisit=true;
 
 function fingerprint(){
@@ -223,10 +227,13 @@ function diff(){
   if(prev&&prev.items){
     firstVisit=false; lastSeen=prev.t||0;
     if(prev.fp===fp&&prev.marks){
-      // same listing as last time — keep the marks so a reload doesn't erase them
-      D.forEach(x=>{const m=prev.marks[x.l]; if(m){x._new=m[0]===1; x._old=m[1]||0;}});
-      (prev.gone||[]).forEach(g=>changes.gone.push(g));
-      lastSeen=prev.seenAt||prev.t||0;
+      // same listing as last time — keep the marks so a reload doesn't erase them,
+      // but only briefly: after that the visitor has seen them and nothing is new
+      if(Date.now()-(prev.t||0)<GRACE){
+        D.forEach(x=>{const m=prev.marks[x.l]; if(m){x._new=m[0]===1; x._old=m[1]||0;}});
+        (prev.gone||[]).forEach(g=>changes.gone.push(g));
+        lastSeen=prev.seenAt||prev.t||0;
+      }
     }else{
       D.forEach(x=>{const p=prev.items[x.l];
         if(!p)x._new=true; else if(p[0]!==x.p)x._old=p[0];});
@@ -435,12 +442,31 @@ $('#sort').addEventListener('change',e=>{state.sort=e.target.value;render();});
 $('#max').addEventListener('change',e=>{state.max=+e.target.value;render();});
 $('#q').addEventListener('input',e=>{state.q=e.target.value.trim().toLowerCase();render();});
 
-load();
-diff();
-build();
-$('#q').value=state.q; $('#max').value=String(state.max); $('#sort').value=state.sort;
-paintCities(); paintKind(); paintBanner();
-render();
+function start(){
+  load();
+  diff();
+  build();
+  $('#q').value=state.q; $('#max').value=String(state.max); $('#sort').value=state.sort;
+  paintCities(); paintKind(); paintBanner();
+  render();
+}
+
+async function boot(){
+  if(SRC){
+    try{
+      const r=await fetch(SRC+'?t='+Date.now(),{cache:'no-store'});
+      const j=await r.json();
+      D=j.items||[];
+      if(j.stamp)$('#stamp').textContent=j.stamp;
+    }catch(e){}
+    if(!D.length){
+      $('#grid').innerHTML='<p class="empty">Die Angebotsdaten konnten gerade nicht geladen '
+        +'werden. Bitte laden Sie die Seite neu.</p>';
+      return;}
+  }
+  start();
+}
+boot();
 """
 
 
@@ -511,17 +537,21 @@ body = f"""<title>Gebrauchte Klaviere &amp; Flügel · alle C. Bechstein Centren
 </div>
 
 <footer><div class="wrap">
-  <p>Daten am {STAMP} von bechstein.com abgerufen · Preise und Verfügbarkeit können sich jederzeit
+  <p>Daten am <span id="stamp">{STAMP}</span> von bechstein.com abgerufen · Preise und Verfügbarkeit können sich jederzeit
   ändern, Zwischenverkauf vorbehalten. Maßgeblich ist immer das Angebot des jeweiligen Centrums.</p>
   {FOOTER_EXTRA}
 </div></footer>
 
-<script>{JS.replace("__DATA__", DATA)}</script>
+<script>{JS.replace("__DATA__", "[]" if PAGES else DATA)
+          .replace("__SRC__", "'data.json'" if PAGES else "null")}</script>
 """
 
 if PAGES:
     out = "docs/index.html"
     os.makedirs("docs", exist_ok=True)
+    # the listings live beside the page: a refresh only rewrites this file
+    json.dump({"stamp": STAMP, "items": items}, open("docs/data.json", "w"),
+              ensure_ascii=False, separators=(",", ":"))
     # the artifact host supplies the doctype, head and a CSS reset; Pages needs our own
     head, markup = body.split("</style>", 1)
     page = ('<!doctype html>\n<html lang="de">\n<head>\n<meta charset="utf-8">\n'
