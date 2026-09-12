@@ -275,9 +275,9 @@ function load(){
 
 function counts(key,pool){const m={};pool.forEach(x=>{m[x[key]]=(m[x[key]]||0)+1});return m;}
 
-const BRAND_COUNTS=counts('b',D);
-const BRANDS=Object.keys(BRAND_COUNTS)
-  .sort((a,b)=>BRAND_COUNTS[b]-BRAND_COUNTS[a]||a.localeCompare(b,'de'));
+/* filled in by start(), which is the first point at which the Pages build
+   has its listings — at parse time D is still the empty placeholder */
+let BRAND_COUNTS={}, BRANDS=[];
 const BRANDS_SHOWN=10;
 
 function build(){
@@ -445,6 +445,9 @@ $('#max').addEventListener('change',e=>{state.max=+e.target.value;render();});
 $('#q').addEventListener('input',e=>{state.q=e.target.value.trim().toLowerCase();render();});
 
 function start(){
+  BRAND_COUNTS=counts('b',D);
+  BRANDS=Object.keys(BRAND_COUNTS)
+    .sort((a,b)=>BRAND_COUNTS[b]-BRAND_COUNTS[a]||a.localeCompare(b,'de'));
   load();
   diff();
   build();
