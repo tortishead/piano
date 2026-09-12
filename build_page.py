@@ -6,6 +6,8 @@
                                         seller's prose left on the seller's own pages)
 """
 import json, re, html, base64, hashlib, os, sys
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 PAGES = "--pages" in sys.argv
 
@@ -472,8 +474,11 @@ boot();
 
 MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli",
           "August", "September", "Oktober", "November", "Dezember"]
-d = __import__("datetime").date.fromtimestamp(os.path.getmtime("instruments.json"))
-STAMP = "%d. %s %d" % (d.day, MONTHS[d.month - 1], d.year)
+# the scrape rewrites instruments.json, so its mtime is when the data was fetched
+d = datetime.fromtimestamp(os.path.getmtime("instruments.json"), ZoneInfo("Europe/Berlin"))
+STAMP = "%d. %s %d um %02d:%02d Uhr %s" % (
+    d.day, MONTHS[d.month - 1], d.year, d.hour, d.minute,
+    "MESZ" if d.dst() else "MEZ")
 
 FOOTER_EXTRA = """<p class="legal">Private, nicht-kommerzielle Übersicht ohne Verbindung zur
   C. Bechstein Pianoforte AG. Alle Angebote, Fotos und Marken gehören den jeweiligen Centren;
