@@ -67,13 +67,13 @@ https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/opus-110-schw
 https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/residence-124-elegance-schwarz-poliert-1/
 https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/s6-212-cm-schwarz-poliert/
 https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/saz-185g-schwarz-poliert/
-https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/u1-121-cm-schwarz-poliert/
+https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/su-118-schwarz-poliert/
 https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/u10a-121-cm-schwarz-poliert/
 https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/u1a-121-cm-schwarz-poliert/
-https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/u3-sh-silent-131-cm-schwarz-poliert/
 https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/vision-v-112-schwarz-poliert-1/
 https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/vision-v-112-schwarz-poliert/
 https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/vision-v-120-schwarz-poliert/
+https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/yu1-121-cm-schwarz-poliert/
 https://www.bechstein.com/centren/bielefeld/gebrauchtes-instrument/z-115-cm-schwarz-poliert/
 https://www.bechstein.com/centren/dresden/gebrauchtes-instrument/academy-a-160-selbstspielsystem-schwarz-poliert-gebraucht/
 https://www.bechstein.com/centren/dresden/gebrauchtes-instrument/academy-a-4-vario-duet-scgwarz-poliert-gebraucht/
@@ -225,7 +225,6 @@ https://www.bechstein.com/centren/stuttgart/gebrauchte-instrumente/-instrument/s
 https://www.bechstein.com/centren/stuttgart/gebrauchte-instrumente/-instrument/whoffmann-v-120-1/
 https://www.bechstein.com/centren/stuttgart/gebrauchte-instrumente/-instrument/whoffmann-v-126-1/
 https://www.bechstein.com/centren/stuttgart/gebrauchte-instrumente/-instrument/yamaha-u1-silent-sh2/
-https://www.bechstein.com/centren/stuttgart/gebrauchte-instrumente/-instrument/zimmermann-s2-3/
 https://www.bechstein.com/centren/tuebingen/gebrauchte-instrumente/gebrauchtes-instrument/a-208-2/
 https://www.bechstein.com/centren/tuebingen/gebrauchte-instrumente/gebrauchtes-instrument/c-bechstein-contur-118-vario/
 https://www.bechstein.com/centren/tuebingen/gebrauchte-instrumente/gebrauchtes-instrument/c-bechstein-klavier-modell-residence-r-124-classic/
