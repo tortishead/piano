@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""Scrape all used instruments from C. Bechstein Centren and dump to JSON."""
-import re, json, html, sys, os
-from concurrent.futures import ThreadPoolExecutor
+"""Fetch all used instruments of the German C. Bechstein Centren and dump to JSON.
+
+Since the October 2026 relaunch bechstein.com runs on WordPress and publishes the
+listings as the `used_instrument` post type, so this reads the REST API instead of
+scraping HTML.
+"""
+import re, json, html, sys
 from urllib.request import urlopen, Request
 
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
+API = "https://bechstein.com/wp-json/wp/v2/"
 
 CITY_LABEL = {
     "augsburg": "Augsburg", "berlin": "Berlin", "bielefeld": "Bielefeld",
@@ -16,66 +21,58 @@ CITY_LABEL = {
 }
 
 
-def get(url):
+def get_json(url):
+    """GET a REST endpoint; raise after three failures so a broken run never ships empty data."""
+    err = None
     for _ in range(3):
         try:
-            with urlopen(Request(url, headers=UA), timeout=30) as r:
-                return r.read().decode("utf-8", "replace")
-        except Exception:
-            pass
-    return ""
+            with urlopen(Request(url, headers=UA), timeout=60) as r:
+                return json.load(r), r.headers
+        except Exception as e:
+            err = e
+    raise RuntimeError("%s: %s" % (url, err))
+
+
+def get_all(path):
+    out, page = [], 1
+    while True:
+        sep = "&" if "?" in path else "?"
+        data, headers = get_json("%s%s%sper_page=100&page=%d" % (API, path, sep, page))
+        out += data
+        if page >= int(headers.get("X-WP-TotalPages", 1)):
+            return out
+        page += 1
 
 
 def strip(s):
-    s = re.sub(r"<[^>]+>", " ", s)
-    return re.sub(r"\s+", " ", html.unescape(s)).replace("\xa0", " ").strip()
+    s = re.sub(r"<[^>]+>", " ", s or "")
+    return re.sub(r"\s+", " ", html.unescape(s).replace("\xa0", " ")).strip()
 
 
-def prop(h, name):
-    m = re.search(r'itemprop="%s"[^>]*>(.*?)</' % name, h, re.S)
-    return strip(m.group(1)) if m else ""
+def to_int(v):
+    try:
+        return int(float(v))
+    except (TypeError, ValueError):
+        return 0
 
 
-def parse(url):
-    h = get(url)
-    if not h:
+def parse(post, centres):
+    m = post["meta"]
+    city = centres.get(str(m.get("used_instrument_center_id")))
+    if city not in CITY_LABEL or m.get("used_instrument_availability") != "available":
         return None
-    city = url.split("/centren/")[1].split("/")[0]
 
-    def money(txt):
-        # matches 7.900 / 7.900,-- / 17.990,- / € 5.690,00
-        m = re.search(r"\b(\d{1,3}(?:\.\d{3})+|\d{3,})\b", txt)
-        return int(m.group(1).replace(".", "")) if m else 0
+    body = strip(m.get("used_instrument_description") or post["content"]["rendered"])
 
-    price_block = re.search(r'<div class="price-info.*?</div>', h, re.S)
-    price = uvp = rent = 0
-    if price_block:
-        pb = price_block.group(0)
-        old = re.search(r'class="old-price">(.*?)<', pb)
-        uvp = money(strip(old.group(1))) if old else 0
-        txt = strip(re.sub(r'<span class="old-price">.*?</span>', "", pb, flags=re.S))
-        mr = re.search(r"Miete[:\s]*([\d.]+)", txt)
-        if mr:
-            rent = int(mr.group(1).rstrip(".").replace(".", ""))
-            txt = txt[: mr.start()]
-        price = money(txt)
-
-    brand = ""
-    mb = re.search(r'class="segment-head product-used">\s*<h5[^>]*>(.*?)</h5>', h, re.S)
-    if mb:
-        brand = strip(mb.group(1))
-
-    desc = prop(h, "description")
-    body = ""
-    mb2 = re.search(r'id="product-description".*?>(.*?)</section>', h, re.S)
-    if mb2:
-        body = strip(mb2.group(1))
-
-    blob = desc + " || " + body
-    year = ""
-    my = re.search(r"Baujahr[:\s]*(?:ca\.\s*)?(\d{4})", blob)
-    if my:
+    year = m.get("used_instrument_year", "")
+    my = re.search(r"Baujahr[:\s]*(?:ca\.\s*)?(\d{4})", body)
+    if not year and my:
         year = my.group(1)
+
+    rent = 0
+    mr = re.search(r"(\d{2,4})\s*,?-*\s*(?:€\s*)?/\s*Monat", body)
+    if mr:
+        rent = int(mr.group(1))
 
     sublocation = ""
     msl = re.search(r"Standort[:\s]+([A-ZÄÖÜ][\wÄÖÜäöüß .-]{2,30})", body)
@@ -87,83 +84,38 @@ def parse(url):
     if mf:
         finish = mf.group(1).strip(" .-")
 
-    def num(v):
-        m = re.search(r"[\d,.]+", v)
-        return m.group(0) if m else ""
-
-    img = prop(h, "image")
-    if img and not img.startswith("http"):
-        img = "https://www.bechstein.com" + img
+    media = post.get("_embedded", {}).get("wp:featuredmedia") or [{}]
 
     return {
-        "city": CITY_LABEL.get(city, city.title()),
+        "city": CITY_LABEL[city],
         "city_slug": city,
         "sublocation": sublocation,
-        "brand": brand,
-        "model": prop(h, "model") or prop(h, "name"),
-        "category": prop(h, "category"),
-        "price": price,
-        "uvp": uvp,
+        "brand": strip(m.get("used_instrument_brand_text")),
+        "model": strip(m.get("used_instrument_model")) or strip(post["title"]["rendered"]),
+        "category": strip(m.get("used_instrument_type_text")),
+        "price": to_int(m.get("used_instrument_price")),
+        "uvp": to_int(m.get("used_instrument_original_price")),
         "rent": rent,
         "year": year,
         "finish": finish,
-        # source markup swaps the height/weight units; numbers themselves are correct
-        "width_cm": num(prop(h, "width")),
-        "height_cm": num(prop(h, "height")),
-        "depth_cm": num(prop(h, "depth")),
-        "weight_kg": num(prop(h, "weight")),
-        "description": desc,
+        "width_cm": m.get("used_instrument_width_cm", ""),
+        "height_cm": m.get("used_instrument_height_cm", ""),
+        "depth_cm": m.get("used_instrument_depth_cm") or m.get("used_instrument_length_cm", ""),
+        "description": strip(post["excerpt"]["rendered"]),
         "body": body[:600],
-        "image": img,
-        "url": url,
+        "image": media[0].get("source_url", ""),
+        "url": post["link"],
     }
 
 
-SITEMAP = "https://www.bechstein.com/sitemap.xml"
-LISTINGS = ["gebrauchte-instrumente", "gebrauchte-instrumente/gebrauchte-klaviere",
-            "gebrauchte-instrumente/gebrauchte-fluegel"]
-
-
-def discover():
-    """Collect every used-instrument page of the German centren.
-
-    The per-centre sitemaps cover most of them; Nürnberg publishes none, so the
-    listing pages are crawled too and the two sets merged.
-    """
-    index = get(SITEMAP)
-    found = set()
-    maps = [u.replace("&amp;", "&") for u in re.findall(r"<loc>(.*?)</loc>", index)
-            if "centerUsedProducts" in u]
-    with ThreadPoolExecutor(max_workers=8) as ex:
-        for body in ex.map(get, maps):
-            found.update(re.findall(r"<loc>(.*?)</loc>", body))
-
-    pages = ["https://www.bechstein.com/centren/%s/%s/" % (c, p)
-             for c in CITY_LABEL for p in LISTINGS]
-    with ThreadPoolExecutor(max_workers=8) as ex:
-        for body in ex.map(get, pages):
-            found.update("https://www.bechstein.com" + m for m in
-                         re.findall(r"/centren/[a-z-]+/gebrauchtes-instrument/[a-z0-9-]+/", body))
-
-    german = sorted(u for u in found
-                    if u.split("/centren/")[1].split("/")[0] in CITY_LABEL)
-    open("all_urls.txt", "w").write("\n".join(german) + "\n")
-    return german
-
-
 def main():
-    if len(sys.argv) > 1:
-        urls = sorted(set(l.strip() for l in open(sys.argv[1]) if l.strip()))
-    else:
-        urls = discover()
-    print("fetching", len(urls), file=sys.stderr)
-    out = []
-    with ThreadPoolExecutor(max_workers=10) as ex:
-        for i, r in enumerate(ex.map(parse, urls)):
-            if r:
-                out.append(r)
-            if i % 25 == 0:
-                print(i, file=sys.stderr)
+    centres = {str(c["id"]): c["slug"] for c in get_all("cbc_center?_fields=id,slug")}
+    posts = get_all("used_instrument?_embed=wp:featuredmedia")
+    print("fetched", len(posts), file=sys.stderr)
+    out = sorted((r for r in (parse(p, centres) for p in posts) if r), key=lambda r: r["url"])
+    if not out:
+        sys.exit("no listings parsed; the API shape probably changed")
+    open("all_urls.txt", "w").write("".join(r["url"] + "\n" for r in out))
     json.dump(out, open("instruments.json", "w"), ensure_ascii=False, indent=1)
     print("wrote", len(out), file=sys.stderr)
 

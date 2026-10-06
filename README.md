@@ -1,7 +1,7 @@
 # Gebrauchte Klaviere & Flügel · C. Bechstein Centren
 
 Every used piano and grand offered by the German C. Bechstein Centren and Partner-Centren,
-scraped from their individual listing pages and put on one filterable page.
+read from bechstein.com's listing API and put on one filterable page.
 
 **Live:** https://tortishead.github.io/piano/
 
@@ -16,7 +16,7 @@ scraped from their individual listing pages and put on one filterable page.
 ## Build
 
 ```sh
-python3 scrape.py            # discover + scrape every German centre -> instruments.json
+python3 scrape.py            # read every German centre from the WordPress API -> instruments.json
 python3 build_page.py --pages # -> docs/index.html   (photos hotlinked from bechstein.com)
 python3 build_page.py         # -> bechstein_gebrauchte.html (photos inlined, needs thumbs.json)
 python3 fetch_thumbs.py       # top up thumbs.json for the inlined build (macOS: sips + cwebp)
