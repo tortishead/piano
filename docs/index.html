@@ -103,6 +103,16 @@ input[type=search]{min-width:210px;flex:1 1 210px;max-width:340px;}
   padding:4px 9px 4px 7px;border-radius:999px;color:var(--card);background:var(--felt);
   box-shadow:0 1px 4px rgba(0,0,0,.25);}
 .dealer svg{width:12px;height:12px;fill:currentColor;}
+.fav{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;border:0;color:var(--ink-3);
+  background:color-mix(in srgb,var(--card) 88%,transparent);box-shadow:0 1px 4px rgba(0,0,0,.25);transition:.14s;}
+.fav svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;}
+.fav:hover{color:var(--felt);}
+.fav[aria-pressed="true"]{color:var(--felt);}
+.fav[aria-pressed="true"] svg{fill:currentColor;}
+.card.is-fav{border-color:var(--felt);}
+.favgone{font-family:ui-sans-serif,-apple-system,sans-serif;font-size:12px;color:var(--ink-3);margin:-12px 0 18px;}
+.favgone:empty{display:none;}
 .thumb img{width:100%;height:100%;object-fit:cover;}
 /* hotlinked photo unreachable &#8212; show a quiet placeholder, never a broken-image icon */
 .thumb.nophoto img{display:none;}
@@ -162,6 +172,7 @@ footer .legal{margin-top:10px;font-size:11.5px;}
     <button class="chip" data-kind="" aria-pressed="true">Alle Typen</button>
     <button class="chip" data-kind="Klavier" aria-pressed="false">Nur Klaviere</button>
     <button class="chip" data-kind="Fl&#252;gel" aria-pressed="false">Nur Fl&#252;gel</button>
+    <button class="chip" id="onlyfav" aria-pressed="false">&#9829; Merkliste</button>
     <select id="max" aria-label="Preisgrenze">
       <option value="0">Preis egal</option>
       <option value="5000">bis 5.000 &#8364;</option>
@@ -186,6 +197,7 @@ footer .legal{margin-top:10px;font-size:11.5px;}
 <div class="wrap">
   <div class="news" id="news"></div>
   <div class="count ui" id="count"></div>
+  <p class="favgone" id="favgone"></p>
   <div class="grid" id="grid"></div>
 </div>
 
@@ -208,8 +220,26 @@ const $=s=>document.querySelector(s);
 const eur=n=>n?n.toLocaleString('de-DE')+' \u20ac':'auf Anfrage';
 const KEY='bechstein-gebrauchte-filter-v1';
 const SEEN='bechstein-gebrauchte-seen-v1';
+const FAV='bechstein-gebrauchte-fav-v1';
 const state={cities:new Set(),brands:new Set(),kind:'',q:'',max:0,sort:'price-asc',
-  showAllBrands:false,onlyChanged:false};
+  showAllBrands:false,onlyChanged:false,onlyFav:false};
+
+/* --- favourites: listing URL -> [brand, model, city, price], kept only in this
+   browser and never in the shareable URL, so a gone listing can still be named --- */
+let favs={};
+try{favs=JSON.parse(localStorage.getItem(FAV))||{};}catch(e){}
+const isFav=x=>x.l in favs;
+function storeFavs(){try{localStorage.setItem(FAV,JSON.stringify(favs));}catch(e){}}
+function toggleFav(url){
+  if(url in favs) delete favs[url];
+  else{const x=D.find(y=>y.l===url); if(x)favs[url]=[x.b,x.m,x.c,x.p];}
+  storeFavs();
+}
+function refreshFavs(){
+  // keep the remembered price current while the listing is still live
+  D.forEach(x=>{if(isFav(x))favs[x.l]=[x.b,x.m,x.c,x.p];});
+  storeFavs();
+}
 
 /* --- what changed since the visitor last opened this page --- */
 const changes={fresh:[],cheaper:[],dearer:[],gone:[]};
@@ -256,7 +286,7 @@ function changed(x){return !!(x._new||x._old);}
 
 function save(){
   const s=JSON.stringify({c:[...state.cities],b:[...state.brands],k:state.kind,
-    q:state.q,m:state.max,s:state.sort,ch:state.onlyChanged?1:0});
+    q:state.q,m:state.max,s:state.sort,ch:state.onlyChanged?1:0,fv:state.onlyFav?1:0});
   try{localStorage.setItem(KEY,s);}catch(e){}
   try{history.replaceState(null,'','#'+encodeURIComponent(s));}catch(e){}
 }
@@ -269,7 +299,7 @@ function load(){
   (s.c||[]).forEach(c=>state.cities.add(c));
   (s.b||[]).forEach(b=>state.brands.add(b));
   state.kind=s.k||''; state.q=s.q||''; state.max=+s.m||0; state.sort=s.s||'price-asc';
-  state.onlyChanged=!!s.ch;
+  state.onlyChanged=!!s.ch; state.onlyFav=!!s.fv;
   if(state.brands.size)state.showAllBrands=true;
 }
 
@@ -310,6 +340,7 @@ function match(x){
   if(state.kind&&x.k!==state.kind)return false;
   if(state.brands.size&&!state.brands.has(x.b))return false;
   if(state.onlyChanged&&!changed(x))return false;
+  if(state.onlyFav&&!isFav(x))return false;
   if(state.max&&(!x.p||x.p>state.max))return false;
   if(state.q){const s=(x.b+' '+x.m+' '+x.c+' '+x.f+' '+x.t+' '+x.y+' '+x.v).toLowerCase();
     if(!state.q.split(/\s+/).every(w=>s.includes(w)))return false;}
@@ -333,10 +364,14 @@ function card(x){
   const flag=x._new?'<span class="flag new">Neu seit Ihrem letzten Besuch</span>'
     :x._old?'<span class="flag '+(down?'down':'up')+'">Preis '+(down?'gesenkt':'erh\u00f6ht')
       +': vorher '+eur(x._old)+'</span>':'';
-  return '<article class="card'+(x._new?' is-new':x._old?' is-repriced':'')+'">'
+  const fav=isFav(x);
+  return '<article class="card'+(x._new?' is-new':x._old?' is-repriced':'')+(fav?' is-fav':'')+'">'
    +flag
    +'<div class="thumb">'
      +(x.v?'<span class="dealer"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2.5 14 1v9.5a2.2 2.2 0 1 1-1.5-2.1V4.2L7.5 5.1v6.9a2.2 2.2 0 1 1-1.5-2.1z"/></svg>'+x.v+'</span>':'')
+     +'<button class="fav" data-fav="'+x.l+'" aria-pressed="'+fav+'" aria-label="'
+       +(fav?'Von der Merkliste entfernen':'Auf die Merkliste')+'" title="Merkliste">'
+       +'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.6 1.1 5 2.9 1.4-1.8 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>'
      +'<img loading="lazy" src="'+x.i+'" alt="'+x.b+' '+x.m
      +'" onerror="this.closest(\'.thumb\').classList.add(\'nophoto\')"></div>'
    +'<div class="body">'
@@ -370,9 +405,12 @@ function render(){
     +brandNote
     +(prices.length?' \u00b7 '+eur(Math.min(...prices))+' bis '+eur(Math.max(...prices)):'');
   $('#grid').innerHTML=list.length?list.map(card).join('')
-    :'<p class="empty">Keine Instrumente f\u00fcr diese Auswahl. Setzen Sie einen Filter zur\u00fcck.</p>';
+    :state.onlyFav&&!D.some(isFav)
+      ?'<p class="empty">Ihre Merkliste ist leer. Tippen Sie auf das Herz einer Karte, um sie zu merken.</p>'
+      :'<p class="empty">Keine Instrumente f\u00fcr diese Auswahl. Setzen Sie einen Filter zur\u00fcck.</p>';
+  paintFav();
   const active=state.cities.size||state.brands.size||state.kind||state.q||state.max
-    ||state.sort!=='price-asc'||state.onlyChanged;
+    ||state.sort!=='price-asc'||state.onlyChanged||state.onlyFav;
   $('#reset').hidden=!active;
   save();
 }
@@ -406,6 +444,19 @@ function paintBanner(){
       .join(' \u00b7 ')+'</p>':'');
 }
 
+function paintFav(){
+  const live=new Set(D.map(x=>x.l));
+  const n=D.filter(isFav).length;
+  const b=$('#onlyfav');
+  b.setAttribute('aria-pressed',state.onlyFav);
+  b.innerHTML='\u2665 Merkliste<span class="ct">'+n+'</span>';
+  const gone=Object.keys(favs).filter(u=>!live.has(u));
+  $('#favgone').innerHTML=state.onlyFav&&gone.length
+    ?'Nicht mehr gelistet: '+gone.map(u=>{const f=favs[u];
+      return f[0]+' '+f[1]+' ('+f[2]+')'+' <button class="chip" data-unfav="'+u+'">entfernen</button>';}).join(' \u00b7 ')
+    :'';
+}
+
 function paintCities(){
   document.querySelectorAll('[data-city]').forEach(n=>{
     const c=n.dataset.city;
@@ -421,6 +472,12 @@ function paintKind(){
 function toggle(set,v){ if(set.has(v)) set.delete(v); else set.add(v); }
 
 document.addEventListener('click',e=>{
+  const f=e.target.closest('[data-fav]'); if(f){
+    toggleFav(f.dataset.fav); render(); return;}
+  const uf=e.target.closest('[data-unfav]'); if(uf){
+    delete favs[uf.dataset.unfav]; storeFavs(); render(); return;}
+  if(e.target.closest('#onlyfav')){
+    state.onlyFav=!state.onlyFav; render(); return;}
   const b=e.target.closest('[data-city]'); if(b){
     const c=b.dataset.city;
     if(!c) state.cities.clear(); else toggle(state.cities,c);
@@ -437,7 +494,7 @@ document.addEventListener('click',e=>{
     state.onlyChanged=!state.onlyChanged; paintBanner(); render(); return;}
   if(e.target.closest('#reset')){
     state.cities.clear(); state.brands.clear();
-    state.kind=''; state.q=''; state.max=0; state.sort='price-asc'; state.onlyChanged=false;
+    state.kind=''; state.q=''; state.max=0; state.sort='price-asc'; state.onlyChanged=false; state.onlyFav=false;
     paintBanner();
     $('#q').value=''; $('#max').value='0'; $('#sort').value='price-asc';
     paintCities(); paintBrands(); paintKind(); render();}
@@ -452,6 +509,7 @@ function start(){
     .sort((a,b)=>BRAND_COUNTS[b]-BRAND_COUNTS[a]||a.localeCompare(b,'de'));
   load();
   diff();
+  refreshFavs();
   build();
   $('#q').value=state.q; $('#max').value=String(state.max); $('#sort').value=state.sort;
   paintCities(); paintKind(); paintBanner();
