@@ -1,7 +1,8 @@
 # Gebrauchte Klaviere & Flügel · C. Bechstein Centren
 
 Every used piano and grand offered by the German C. Bechstein Centren and Partner-Centren,
-read from bechstein.com's listing API and put on one filterable page.
+read from bechstein.com's listing API and put on one filterable page, plus the used
+uprights of PIANO-FISCHER (Stuttgart, München) from piano-fischer.de's WooCommerce Store API.
 
 **Live:** https://tortishead.github.io/piano/
 
@@ -16,7 +17,7 @@ read from bechstein.com's listing API and put on one filterable page.
 ## Build
 
 ```sh
-python3 scrape.py            # read every German centre from the WordPress API -> instruments.json
+python3 scrape.py            # read every German centre + Piano-Fischer -> instruments.json
 python3 build_page.py --pages # -> docs/index.html   (photos hotlinked from bechstein.com)
 python3 build_page.py         # -> bechstein_gebrauchte.html (photos inlined, needs thumbs.json)
 python3 fetch_thumbs.py       # top up thumbs.json for the inlined build (macOS: sips + cwebp)
@@ -30,4 +31,4 @@ which is what makes the "since your last visit" marks meaningful.
 Private, non-commercial index with no connection to C. Bechstein Pianoforte AG. It stores
 facts only — brand, model, year, dimensions, price, location — and links every card to the
 seller's own page, where the description and contact details live. Photos are not copied:
-they load directly from bechstein.com.
+they load directly from bechstein.com / piano-fischer.de.

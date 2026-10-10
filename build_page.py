@@ -484,8 +484,9 @@ STAMP = "%d. %s %d um %02d:%02d Uhr %s" % (
     "MESZ" if d.dst() else "MEZ")
 
 FOOTER_EXTRA = """<p class="legal">Private, nicht-kommerzielle Übersicht ohne Verbindung zur
-  C. Bechstein Pianoforte AG. Alle Angebote, Fotos und Marken gehören den jeweiligen Centren;
-  die Fotos werden direkt von bechstein.com geladen und hier nicht gespeichert. Jede Karte
+  C. Bechstein Pianoforte AG oder Piano-Fischer. Alle Angebote, Fotos und Marken gehören den
+  jeweiligen Händlern; die Fotos werden direkt von bechstein.com bzw. piano-fischer.de geladen
+  und hier nicht gespeichert. Jede Karte
   verlinkt auf die Originalseite, auf der Beschreibung, Details und Kontakt stehen.</p>""" \
     if PAGES else ""
 
@@ -494,10 +495,11 @@ body = f"""<title>Gebrauchte Klaviere &amp; Flügel · alle C. Bechstein Centren
 <style>{CSS}</style>
 
 <header class="top"><div class="wrap">
-  <div class="eyebrow">C. Bechstein Centren · Deutschland</div>
+  <div class="eyebrow">C. Bechstein Centren &amp; Piano-Fischer · Deutschland</div>
   <h1>Alle gebrauchten Klaviere und Flügel — an einem Ort</h1>
   <p class="lede">Der Bestand aller deutschen C. Bechstein Centren und Partner-Centren,
-  von {len(items)} Einzelseiten auf bechstein.com zusammengetragen und hier durchsuchbar gemacht.
+  dazu die gebrauchten Klaviere von Piano-Fischer in Stuttgart und München —
+  von {len(items)} Einzelseiten auf bechstein.com und piano-fischer.de zusammengetragen und hier durchsuchbar gemacht.
   Preise und Verfügbarkeit stammen direkt von den Angebotsseiten.</p>
   <div class="stats">
     <div class="stat"><div class="n">{len(items)}</div><div class="k">Instrumente</div></div>
@@ -545,7 +547,7 @@ body = f"""<title>Gebrauchte Klaviere &amp; Flügel · alle C. Bechstein Centren
 </div>
 
 <footer><div class="wrap">
-  <p>Daten am <span id="stamp">{STAMP}</span> von bechstein.com abgerufen · Preise und Verfügbarkeit können sich jederzeit
+  <p>Daten am <span id="stamp">{STAMP}</span> von bechstein.com und piano-fischer.de abgerufen · Preise und Verfügbarkeit können sich jederzeit
   ändern, Zwischenverkauf vorbehalten. Maßgeblich ist immer das Angebot des jeweiligen Centrums.</p>
   {FOOTER_EXTRA}
 </div></footer>
@@ -564,7 +566,7 @@ if PAGES:
     head, markup = body.split("</style>", 1)
     page = ('<!doctype html>\n<html lang="de">\n<head>\n<meta charset="utf-8">\n'
             '<meta name="description" content="Alle gebrauchten Klaviere und Flügel der '
-            'deutschen C. Bechstein Centren auf einer Seite — filter- und sortierbar.">\n'
+            'deutschen C. Bechstein Centren und von Piano-Fischer auf einer Seite — filter- und sortierbar.">\n'
             + head.replace("<style>", "<style>\n*{margin:0;padding:0;box-sizing:border-box}\n", 1)
             + "</style>\n</head>\n<body>" + markup + "</body>\n</html>\n")
 else:

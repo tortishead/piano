@@ -4,12 +4,16 @@
 Since the October 2026 relaunch bechstein.com runs on WordPress and publishes the
 listings as the `used_instrument` post type, so this reads the REST API instead of
 scraping HTML.
+
+Also reads the used uprights of PIANO-FISCHER (Stuttgart, München) from their
+WooCommerce Store API, mapped onto the same record shape.
 """
 import re, json, html, sys
 from urllib.request import urlopen, Request
 
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
 API = "https://bechstein.com/wp-json/wp/v2/"
+FISCHER_API = "https://www.piano-fischer.de/wp-json/wc/store/v1/"
 
 CITY_LABEL = {
     "augsburg": "Augsburg", "berlin": "Berlin", "bielefeld": "Bielefeld",
@@ -33,11 +37,11 @@ def get_json(url):
     raise RuntimeError("%s: %s" % (url, err))
 
 
-def get_all(path):
+def get_all(path, api=API):
     out, page = [], 1
     while True:
         sep = "&" if "?" in path else "?"
-        data, headers = get_json("%s%s%sper_page=100&page=%d" % (API, path, sep, page))
+        data, headers = get_json("%s%s%sper_page=100&page=%d" % (api, path, sep, page))
         out += data
         if page >= int(headers.get("X-WP-TotalPages", 1)):
             return out
@@ -108,11 +112,85 @@ def parse(post, centres):
     }
 
 
+FISCHER_CITY = {"Stuttgart": "stuttgart", "München": "muenchen"}
+FISCHER_BRANDS = ["Grotrian-Steinweg", "C.Bechstein", "C. Bechstein", "Bechstein", "Steinway & Sons",
+                  "Yamaha", "Kawai", "Feurich", "Schimmel", "Seiler", "Blüthner", "Sauter",
+                  "Hoffmann", "Zimmermann", "Petrof", "Pleyel", "Förster", "Ibach"]
+
+
+def parse_fischer(p):
+    """One product of piano-fischer.de's "gebrauchte / klavier" category."""
+    name = strip(p["name"])
+    if "digital" in name.lower() or not p.get("is_in_stock"):
+        return None   # the category also holds the odd used digital piano
+    where = " ".join(t["name"] for a in p["attributes"] if a["name"] == "Standort" for t in a["terms"])
+    city = next((c for c in FISCHER_CITY if c in where), None)
+    if not city:
+        return None
+
+    title = re.sub(r"\s*\(gebraucht\)\s*$", "", name, flags=re.I)
+    brand = next((b for b in FISCHER_BRANDS if title.lower().startswith(b.lower())), title.split()[0])
+    model = re.sub(r"^Modell\s+", "", title[len(brand):].strip())
+
+    body = strip(p["description"])
+    year = ""
+    my = re.search(r"Baujahr[:\s]*(?:ca\.\s*)?(\d{4})", body)
+    if my:
+        year = my.group(1)
+
+    # the text before "Baujahr" is the finish when it is short ("Schwarz matt", "Eiche")
+    finish = body.split("Baujahr")[0].strip(" .-") if my else ""
+    if len(finish) > 60:
+        finish = ""
+
+    # dimensions come in varying order (H x B x T, B x T x H, ...); for an upright the
+    # width is the largest figure and the depth the smallest
+    width = height = depth = ""
+    md = re.search(r"(\d{2,3})\s*x\s*(\d{2,3})\s*x\s*(\d{2,3})", body)
+    if md:
+        depth, height, width = sorted(md.groups(), key=int)
+
+    unit = 10 ** p["prices"]["currency_minor_unit"]
+    price = to_int(p["prices"]["price"]) // unit
+    uvp = 0
+    mn = re.search(r"Neupreis[:\s]*(?:EUR|€)?\s*([\d.]+)", body)
+    if mn:
+        uvp = to_int(mn.group(1).replace(".", ""))
+    elif to_int(p["prices"]["regular_price"]) // unit > price:
+        uvp = to_int(p["prices"]["regular_price"]) // unit
+
+    return {
+        "city": city,
+        "city_slug": FISCHER_CITY[city],
+        "sublocation": "Piano-Fischer",
+        "brand": brand,
+        "model": model or title,
+        "category": "Klavier",
+        "price": price,
+        "uvp": uvp,
+        "rent": 0,
+        "year": year,
+        "finish": finish,
+        "width_cm": width,
+        "height_cm": height,
+        "depth_cm": depth,
+        "description": strip(p["short_description"]),
+        "body": body[:600],
+        "image": p["images"][0]["src"] if p["images"] else "",
+        "url": p["permalink"],
+    }
+
+
 def main():
     centres = {str(c["id"]): c["slug"] for c in get_all("cbc_center?_fields=id,slug")}
     posts = get_all("used_instrument?_embed=wp:featuredmedia")
     print("fetched", len(posts), file=sys.stderr)
-    out = sorted((r for r in (parse(p, centres) for p in posts) if r), key=lambda r: r["url"])
+    out = [r for r in (parse(p, centres) for p in posts) if r]
+
+    fischer = get_all("products?category=klavier", FISCHER_API)
+    print("fetched", len(fischer), "from piano-fischer.de", file=sys.stderr)
+    out += [r for r in map(parse_fischer, fischer) if r]
+    out.sort(key=lambda r: r["url"])
     if not out:
         sys.exit("no listings parsed; the API shape probably changed")
     open("all_urls.txt", "w").write("".join(r["url"] + "\n" for r in out))
