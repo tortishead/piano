@@ -71,6 +71,8 @@ for r in RAW:
         # the seller's sales copy stays on the seller's page in the public build
         "t": "" if PAGES else blurb(r),
         "i": thumb(r), "l": r["url"],
+        # a listing from a dealer other than a Bechstein centre gets a badge on its card
+        "v": r.get("dealer", ""),
     })
 items.sort(key=lambda x: (x["c"], x["k"], x["p"]))
 
@@ -166,7 +168,12 @@ input[type=search]{min-width:210px;flex:1 1 210px;max-width:340px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;
   display:flex;flex-direction:column;box-shadow:var(--shadow);transition:.16s;}
 .card:hover{transform:translateY(-2px);border-color:var(--brass);}
-.thumb{aspect-ratio:4/3;background:var(--brass-soft);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.thumb{aspect-ratio:4/3;background:var(--brass-soft);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.dealer{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;gap:5px;
+  font-family:ui-sans-serif,-apple-system,sans-serif;font-size:11px;font-weight:600;letter-spacing:.03em;
+  padding:4px 9px 4px 7px;border-radius:999px;color:var(--card);background:var(--felt);
+  box-shadow:0 1px 4px rgba(0,0,0,.25);}
+.dealer svg{width:12px;height:12px;fill:currentColor;}
 .thumb img{width:100%;height:100%;object-fit:cover;}
 /* hotlinked photo unreachable — show a quiet placeholder, never a broken-image icon */
 .thumb.nophoto img{display:none;}
@@ -311,7 +318,7 @@ function match(x){
   if(state.brands.size&&!state.brands.has(x.b))return false;
   if(state.onlyChanged&&!changed(x))return false;
   if(state.max&&(!x.p||x.p>state.max))return false;
-  if(state.q){const s=(x.b+' '+x.m+' '+x.c+' '+x.f+' '+x.t+' '+x.y).toLowerCase();
+  if(state.q){const s=(x.b+' '+x.m+' '+x.c+' '+x.f+' '+x.t+' '+x.y+' '+x.v).toLowerCase();
     if(!state.q.split(/\\s+/).every(w=>s.includes(w)))return false;}
   return true;
 }
@@ -335,7 +342,9 @@ function card(x){
       +': vorher '+eur(x._old)+'</span>':'';
   return '<article class="card'+(x._new?' is-new':x._old?' is-repriced':'')+'">'
    +flag
-   +'<div class="thumb"><img loading="lazy" src="'+x.i+'" alt="'+x.b+' '+x.m
+   +'<div class="thumb">'
+     +(x.v?'<span class="dealer"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2.5 14 1v9.5a2.2 2.2 0 1 1-1.5-2.1V4.2L7.5 5.1v6.9a2.2 2.2 0 1 1-1.5-2.1z"/></svg>'+x.v+'</span>':'')
+     +'<img loading="lazy" src="'+x.i+'" alt="'+x.b+' '+x.m
      +'" onerror="this.closest(\\'.thumb\\').classList.add(\\'nophoto\\')"></div>'
    +'<div class="body">'
    +'<div class="brand">'+x.b+'</div>'

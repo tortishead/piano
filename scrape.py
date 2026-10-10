@@ -65,6 +65,8 @@ def parse(post, centres):
     city = centres.get(str(m.get("used_instrument_center_id")))
     if city not in CITY_LABEL or m.get("used_instrument_availability") != "available":
         return None
+    if strip(m.get("used_instrument_type_text")) == "Digitalpiano":
+        return None   # acoustic instruments only
 
     body = strip(m.get("used_instrument_description") or post["content"]["rendered"])
 
@@ -162,7 +164,8 @@ def parse_fischer(p):
     return {
         "city": city,
         "city_slug": FISCHER_CITY[city],
-        "sublocation": "Piano-Fischer",
+        "sublocation": "",
+        "dealer": "Piano-Fischer",
         "brand": brand,
         "model": model or title,
         "category": "Klavier",
