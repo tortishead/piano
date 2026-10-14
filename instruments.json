@@ -3066,6 +3066,27 @@
   "url": "https://www.piano-fischer.de/shop/gebrauchte/klavier/kawai-cx-5-gebraucht/"
  },
  {
+  "city": "Stuttgart",
+  "city_slug": "stuttgart",
+  "sublocation": "",
+  "dealer": "Piano-Fischer",
+  "brand": "Yamaha",
+  "model": "M-5j",
+  "category": "Klavier",
+  "price": 2790,
+  "uvp": 0,
+  "rent": 0,
+  "year": "1983",
+  "finish": "",
+  "width_cm": "148",
+  "height_cm": "104",
+  "depth_cm": "54",
+  "description": "",
+  "body": "Baujahr: 1983 Nussbaum 104 x 148 x 54 cm 2 Jahre Garantie, inkl. Lieferung EG im Raum Stuttgart und 1. Service",
+  "image": "https://www.piano-fischer.de/wp-content/uploads/2026/10/Yamaha-M-5j-gebr.Str-Nuss.jpg",
+  "url": "https://www.piano-fischer.de/shop/gebrauchte/klavier/yamaha-m-5j-gebraucht/"
+ },
+ {
   "city": "München",
   "city_slug": "muenchen",
   "sublocation": "",
