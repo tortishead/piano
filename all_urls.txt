@@ -17,6 +17,7 @@ https://bechstein.com/gebrauchte-instrumente/c-120-tradition/
 https://bechstein.com/gebrauchte-instrumente/c-8/
 https://bechstein.com/gebrauchte-instrumente/c-bechstein-a-190-mahagoni-poliert/
 https://bechstein.com/gebrauchte-instrumente/c-bechstein-classic-124-vario-1-2/
+https://bechstein.com/gebrauchte-instrumente/c-bechstein-concert-d-282/
 https://bechstein.com/gebrauchte-instrumente/concert-8-2/
 https://bechstein.com/gebrauchte-instrumente/concert-8-5/
 https://bechstein.com/gebrauchte-instrumente/concert-8/
@@ -32,6 +33,7 @@ https://bechstein.com/gebrauchte-instrumente/concert-l-167-2/
 https://bechstein.com/gebrauchte-instrumente/concert-l-167-vavona/
 https://bechstein.com/gebrauchte-instrumente/concert-l-167/
 https://bechstein.com/gebrauchte-instrumente/eminent-400-lxd/
+https://bechstein.com/gebrauchte-instrumente/euterpe-eu-112/
 https://bechstein.com/gebrauchte-instrumente/kawai-ge-30/
 https://bechstein.com/gebrauchte-instrumente/klavier-professional-p-120/
 https://bechstein.com/gebrauchte-instrumente/klavier-tradition-t-122/
@@ -47,7 +49,6 @@ https://bechstein.com/gebrauchte-instrumente/p-114-2/
 https://bechstein.com/gebrauchte-instrumente/p-120-1-2/
 https://bechstein.com/gebrauchte-instrumente/p-120-vario-1/
 https://bechstein.com/gebrauchte-instrumente/p-120-vario-duet-1/
-https://bechstein.com/gebrauchte-instrumente/professional-p-114-vario-duet-weiss-poliert/
 https://bechstein.com/gebrauchte-instrumente/professional-p-188-1/
 https://bechstein.com/gebrauchte-instrumente/r-116-millenium-1/
 https://bechstein.com/gebrauchte-instrumente/r-116-millenium-vario-classic/
@@ -106,7 +107,6 @@ https://bechstein.com/gebrauchte-instrumente/v-2-mit-vario-duet/
 https://bechstein.com/gebrauchte-instrumente/vision-126/
 https://bechstein.com/gebrauchte-instrumente/vision-v-112-4/
 https://bechstein.com/gebrauchte-instrumente/vision-v-112-5/
-https://bechstein.com/gebrauchte-instrumente/vision-v-112-6/
 https://bechstein.com/gebrauchte-instrumente/vision-v-112-8/
 https://bechstein.com/gebrauchte-instrumente/vision-v-120-1/
 https://bechstein.com/gebrauchte-instrumente/vision-v-120-3/
@@ -121,10 +121,12 @@ https://bechstein.com/gebrauchte-instrumente/vision-v120-vario/
 https://bechstein.com/gebrauchte-instrumente/vision-v2-vario-1/
 https://bechstein.com/gebrauchte-instrumente/vision-v2-vario/
 https://bechstein.com/gebrauchte-instrumente/vision-v2/
+https://bechstein.com/gebrauchte-instrumente/w-hoffmann-tradition-t-186/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-112-schwarz-poliert/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-120-vario-classic/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-131/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-vision-v-120-used/
+https://bechstein.com/gebrauchte-instrumente/w-hoffmann-vision-v-158-mahagoni-poliert/
 https://bechstein.com/gebrauchte-instrumente/whoffmann-p-120-schwarz-poliert-chrom-poliert/
 https://bechstein.com/gebrauchte-instrumente/whoffmann-p-206-schwarz-poliert-gebraucht-1/
 https://bechstein.com/gebrauchte-instrumente/whoffmann-tradition-t161-mit-vario-duet-stummschaltung/
@@ -137,6 +139,7 @@ https://bechstein.com/gebrauchte-instrumente/z-175-schwarz-poliert-ausstellungss
 https://bechstein.com/gebrauchte-instrumente/z-175-standard/
 https://bechstein.com/gebrauchte-instrumente/z124-mit-yamaha-silent/
 https://bechstein.com/gebrauchte-instrumente/zimmermann-fluegel-studio-s150-vario/
+https://bechstein.com/gebrauchte-instrumente/zimmermann-studio-s-2-vario-2/
 https://www.piano-fischer.de/shop/gebrauchte/klavier/c-bechstein-12-a-gebraucht/
 https://www.piano-fischer.de/shop/gebrauchte/klavier/c-bechstein-millenium-114-vario-gebraucht/
 https://www.piano-fischer.de/shop/gebrauchte/klavier/feurich-133-gebraucht/
