@@ -17,6 +17,7 @@ https://bechstein.com/gebrauchte-instrumente/c-120-tradition/
 https://bechstein.com/gebrauchte-instrumente/c-8/
 https://bechstein.com/gebrauchte-instrumente/c-bechstein-a-190-mahagoni-poliert/
 https://bechstein.com/gebrauchte-instrumente/c-bechstein-academy-a-160/
+https://bechstein.com/gebrauchte-instrumente/c-bechstein-academy-a-208/
 https://bechstein.com/gebrauchte-instrumente/c-bechstein-classic-124-vario-1-2/
 https://bechstein.com/gebrauchte-instrumente/c-bechstein-concert-d-282/
 https://bechstein.com/gebrauchte-instrumente/c-bechstein-residence-r-6-classic/
@@ -57,6 +58,7 @@ https://bechstein.com/gebrauchte-instrumente/r-116-millenium-vario-classic/
 https://bechstein.com/gebrauchte-instrumente/residence-r-124-elegance/
 https://bechstein.com/gebrauchte-instrumente/residence-r-2-vario/
 https://bechstein.com/gebrauchte-instrumente/residence-r6/
+https://bechstein.com/gebrauchte-instrumente/roenisch-115-m/
 https://bechstein.com/gebrauchte-instrumente/s-150/
 https://bechstein.com/gebrauchte-instrumente/s-160-1/
 https://bechstein.com/gebrauchte-instrumente/s-160-gebraucht/
@@ -123,11 +125,13 @@ https://bechstein.com/gebrauchte-instrumente/vision-v120-vario/
 https://bechstein.com/gebrauchte-instrumente/vision-v2-vario-1/
 https://bechstein.com/gebrauchte-instrumente/vision-v2-vario/
 https://bechstein.com/gebrauchte-instrumente/vision-v2/
+https://bechstein.com/gebrauchte-instrumente/w-hoffmann-professional-p-120-schwarz-mit-chrom/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-professional-p-162-schwarz-mit-chrom/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-tradition-t-186/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-112-schwarz-poliert/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-120-vario-classic/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-131/
+https://bechstein.com/gebrauchte-instrumente/w-hoffmann-vision-v-112/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-vision-v-120-used/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-vision-v-158-mahagoni-poliert/
 https://bechstein.com/gebrauchte-instrumente/whoffmann-p-120-schwarz-poliert-chrom-poliert/
@@ -136,6 +140,7 @@ https://bechstein.com/gebrauchte-instrumente/whoffmann-tradition-t161-mit-vario-
 https://bechstein.com/gebrauchte-instrumente/whoffmann-v-112-vario-classic/
 https://bechstein.com/gebrauchte-instrumente/whoffmann-v-158-schwarz-poliert/
 https://bechstein.com/gebrauchte-instrumente/world-118/
+https://bechstein.com/gebrauchte-instrumente/yamaha-b-1/
 https://bechstein.com/gebrauchte-instrumente/z-120-1/
 https://bechstein.com/gebrauchte-instrumente/z-120-2/
 https://bechstein.com/gebrauchte-instrumente/z-175-schwarz-poliert-ausstellungsstueck/
