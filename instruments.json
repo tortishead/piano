@@ -780,6 +780,26 @@
   "url": "https://bechstein.com/gebrauchte-instrumente/euterpe-eu-112/"
  },
  {
+  "city": "Hamburg",
+  "city_slug": "hamburg",
+  "sublocation": "",
+  "brand": "Kawai",
+  "model": "GL-30",
+  "category": "Flügel",
+  "price": 11775,
+  "uvp": 21775,
+  "rent": 0,
+  "year": "2017",
+  "finish": "",
+  "width_cm": "150",
+  "height_cm": "102",
+  "depth_cm": "166",
+  "description": "Die GL-Flügelserie besitzt alle wichtigen Qualitätsmerkmale, die Kawai Instrumente zu einer bevorzugten Wahl von Pianisten und Lehrenden für Generationen gemacht haben. Erdacht und entwickelt mit dem Ziel außergewöhnlichen Klang und Anschlag zu bieten, der über viele Jahre Bestand hat.",
+  "body": "Die GL-Flügelserie besitzt alle wichtigen Qualitätsmerkmale, die Kawai Instrumente zu einer bevorzugten Wahl von Pianisten und Lehrenden für Generationen gemacht haben. Erdacht und entwickelt mit dem Ziel außergewöhnlichen Klang und Anschlag zu bieten, der über viele Jahre Bestand hat.",
+  "image": "https://bechstein.com/wp-content/uploads/jet-form-builder/7649666857370116a3d0630889841857/2026/10/gebrauchtinstrument-gl-30-hamburg-01.webp",
+  "url": "https://bechstein.com/gebrauchte-instrumente/gl-30/"
+ },
+ {
   "city": "Dresden",
   "city_slug": "dresden",
   "sublocation": "",
