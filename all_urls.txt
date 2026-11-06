@@ -52,7 +52,6 @@ https://bechstein.com/gebrauchte-instrumente/modell-v-112-in-schwarz-poliert-1-1
 https://bechstein.com/gebrauchte-instrumente/nova-114/
 https://bechstein.com/gebrauchte-instrumente/p-114-2/
 https://bechstein.com/gebrauchte-instrumente/p-120-1-2/
-https://bechstein.com/gebrauchte-instrumente/p-120-vario-1/
 https://bechstein.com/gebrauchte-instrumente/p-120-vario-duet-1/
 https://bechstein.com/gebrauchte-instrumente/professional-p-188-1/
 https://bechstein.com/gebrauchte-instrumente/r-116-millenium-1/
@@ -66,7 +65,6 @@ https://bechstein.com/gebrauchte-instrumente/s-160-1/
 https://bechstein.com/gebrauchte-instrumente/s-160-gebraucht/
 https://bechstein.com/gebrauchte-instrumente/s-160/
 https://bechstein.com/gebrauchte-instrumente/s-190/
-https://bechstein.com/gebrauchte-instrumente/s-2-3/
 https://bechstein.com/gebrauchte-instrumente/s-2-vario-1/
 https://bechstein.com/gebrauchte-instrumente/s-2-vario-baujahr-2024/
 https://bechstein.com/gebrauchte-instrumente/s-2-vario/
@@ -125,6 +123,7 @@ https://bechstein.com/gebrauchte-instrumente/vision-v120-vario/
 https://bechstein.com/gebrauchte-instrumente/vision-v2-vario-1/
 https://bechstein.com/gebrauchte-instrumente/vision-v2-vario/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-professional-p-120-schwarz-mit-chrom/
+https://bechstein.com/gebrauchte-instrumente/w-hoffmann-professional-p-120-vario/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-professional-p-162-schwarz-mit-chrom/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-tradition-t-186/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-112-schwarz-poliert/
@@ -140,12 +139,11 @@ https://bechstein.com/gebrauchte-instrumente/whoffmann-tradition-t161-mit-vario-
 https://bechstein.com/gebrauchte-instrumente/whoffmann-v-112-vario-classic/
 https://bechstein.com/gebrauchte-instrumente/whoffmann-v-158-schwarz-poliert/
 https://bechstein.com/gebrauchte-instrumente/world-118/
-https://bechstein.com/gebrauchte-instrumente/yamaha-b-1/
 https://bechstein.com/gebrauchte-instrumente/yamaha-b1-2/
 https://bechstein.com/gebrauchte-instrumente/yamaha-b1/
 https://bechstein.com/gebrauchte-instrumente/z-120-1/
 https://bechstein.com/gebrauchte-instrumente/z-120-2/
-https://bechstein.com/gebrauchte-instrumente/z-175-schwarz-poliert-ausstellungsstueck/
+https://bechstein.com/gebrauchte-instrumente/z-120-vario/
 https://bechstein.com/gebrauchte-instrumente/z-175-standard/
 https://bechstein.com/gebrauchte-instrumente/z124-mit-yamaha-silent/
 https://bechstein.com/gebrauchte-instrumente/zimmermann-fluegel-studio-s150-vario/
@@ -155,6 +153,5 @@ https://www.piano-fischer.de/shop/gebrauchte/klavier/feurich-133-gebraucht/
 https://www.piano-fischer.de/shop/gebrauchte/klavier/grotrian-steinweg-modell-110-gebraucht-kopie/
 https://www.piano-fischer.de/shop/gebrauchte/klavier/grotrian-steinweg-modell-110-gebraucht/
 https://www.piano-fischer.de/shop/gebrauchte/klavier/kawai-cx-5-gebraucht/
-https://www.piano-fischer.de/shop/gebrauchte/klavier/yamaha-m-5j-gebraucht/
 https://www.piano-fischer.de/shop/gebrauchte/klavier/yamaha-p-121-hg-gebraucht/
 https://www.piano-fischer.de/shop/gebrauchte/klavier/yamaha-u1-silent-sh2-gebraucht/
