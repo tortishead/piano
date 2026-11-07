@@ -214,6 +214,17 @@ footer p{max-width:78ch;}
 footer .legal{margin-top:10px;font-size:11.5px;}
 .empty{padding:60px 0;text-align:center;color:var(--ink-3);}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+/* Phones: the full filter block is taller than the screen, so a sticky bar would
+   cover every card. Let it scroll away, and keep cities/brands to one swipeable line. */
+@media (max-width:720px),(max-height:560px){
+  .controls{position:static;backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--ground);}
+  #cities,#brands{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;margin-left:-20px;margin-right:-20px;padding:2px 20px;}
+  #cities::-webkit-scrollbar,#brands::-webkit-scrollbar{display:none;}
+  #cities .chip,#brands .chip{flex:0 0 auto;white-space:nowrap;}
+  input[type=search]{min-width:0;max-width:none;flex-basis:100%;}
+  header.top{padding:28px 0 20px;}
+}
 """
 
 JS = """
