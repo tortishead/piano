@@ -60,7 +60,6 @@ https://bechstein.com/gebrauchte-instrumente/residence-r-2-vario/
 https://bechstein.com/gebrauchte-instrumente/residence-r6/
 https://bechstein.com/gebrauchte-instrumente/roenisch-115-m/
 https://bechstein.com/gebrauchte-instrumente/s-150/
-https://bechstein.com/gebrauchte-instrumente/s-160-1/
 https://bechstein.com/gebrauchte-instrumente/s-160-gebraucht/
 https://bechstein.com/gebrauchte-instrumente/s-160/
 https://bechstein.com/gebrauchte-instrumente/s-190/
@@ -115,7 +114,6 @@ https://bechstein.com/gebrauchte-instrumente/vision-v-120-4/
 https://bechstein.com/gebrauchte-instrumente/vision-v-120/
 https://bechstein.com/gebrauchte-instrumente/vision-v-158-vario-duet/
 https://bechstein.com/gebrauchte-instrumente/vision-v-2-1/
-https://bechstein.com/gebrauchte-instrumente/vision-v112-vario/
 https://bechstein.com/gebrauchte-instrumente/vision-v120-1/
 https://bechstein.com/gebrauchte-instrumente/vision-v120-vario/
 https://bechstein.com/gebrauchte-instrumente/vision-v2-vario-1/
@@ -126,10 +124,12 @@ https://bechstein.com/gebrauchte-instrumente/w-hoffmann-professional-p-162-schwa
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-professional-p120-vario/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-tradition-t-186/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-tradition-t122-vario/
+https://bechstein.com/gebrauchte-instrumente/w-hoffmann-tradition-t186/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-112-schwarz-poliert/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-112-vario/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-120-vario-classic/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-131/
+https://bechstein.com/gebrauchte-instrumente/w-hoffmann-v-2/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-vision-v-112/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-vision-v-120-used/
 https://bechstein.com/gebrauchte-instrumente/w-hoffmann-vision-v-158-mahagoni-poliert/
