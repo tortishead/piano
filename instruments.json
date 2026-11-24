@@ -375,7 +375,7 @@
   "height_cm": "",
   "depth_cm": "160",
   "description": "UVP ab 52.900 € (DE/AT) – Musikalisch sehr ausgewogen, präziser Anschlag. Willkommen in der Bechstein-Welt.",
-  "body": "C. Bechstein Academy Flügel A 160 – Baujahr 2020 Kompakte Größe, große Klangpersönlichkeit. Der C. Bechstein Academy A 160 vereint anspruchsvolle Klavierbaukunst mit beeindruckender Klangqualität. Trotz seiner kompakten Maße begeistert dieser Stutzflügel mit einem sehr ausgewogenen, harmonischen Klangbild und einer ausdrucksstarken Klangvielfalt. Sein präziser Anschlag, die feine Klangabstufung und die natürliche Klangentfaltung machen ihn zu einem inspirierenden Instrument für anspruchsvolle Pianisten. Das hier angebotene Instrument stammt aus Inzahlungnahme, wurde im Jahr 2020 gebaut und bef",
+  "body": "C. Bechstein Academy Flügel A 160 – Baujahr 2020 Sie sollten diesen Flügel unbedingt spielen! Wer einen hochwertigen Flügel \" Made in Germany\" sucht, der nicht zu groß ist, aber großartig klingt, hat hiermit das ideale Instrument. Deutsche Klavierbaukunst von C. Bechstein Der Academy A 160 wurde im C. Bechstein Kompetenzzentrum in Seifhennersdorf entwickelt und steht für die Verbindung aus traditioneller deutscher Klavierbaukunst, sorgfältiger Materialauswahl und moderner Fertigungstechnik. Ein Flügel, der durch seine musikalischen Qualitäten, seine elegante Erscheinung und seine kompakte Bauw",
   "image": "https://bechstein.com/wp-content/uploads/jet-form-builder/ca4a51a35279b9d195c2480af03ba62b/2026/11/gebrauchtinstrument-c-bechstein-academy-a-160-duesseldorf-01.webp",
   "url": "https://bechstein.com/gebrauchte-instrumente/c-bechstein-academy-a-160-2/"
  },
@@ -2680,6 +2680,26 @@
   "url": "https://bechstein.com/gebrauchte-instrumente/w-hoffmann-vision-v-158-mahagoni-poliert/"
  },
  {
+  "city": "Dresden",
+  "city_slug": "dresden",
+  "sublocation": "",
+  "brand": "W. Hoffmann",
+  "model": "Vision V 158",
+  "category": "Flügel",
+  "price": 12900,
+  "uvp": 18900,
+  "rent": 0,
+  "year": "2017",
+  "finish": "",
+  "width_cm": "152",
+  "height_cm": "",
+  "depth_cm": "158",
+  "description": "Der W. Hoffmann Vision Flügel V 158 überzeugt mit europäischem Klang, harmonischem Tonprofil und angenehmem Spielgefühl. Dieser Stutzflügel mit dem markanten Klangprofil wird in der C. Bechstein Europe Herstellung mit großem Verantwortungsgefühl und Erfahrung für Qualität in jedem Detail gefertigt. Der W. Hoffmann Vision V 158 ist ein robuster, klangstarker Stutzflügel. Die umfangreiche Fertigungsstruktur in Tschechien und das […]",
+  "body": "Der W. Hoffmann Vision Flügel V 158 überzeugt mit europäischem Klang, harmonischem Tonprofil und angenehmem Spielgefühl. Dieser Stutzflügel mit dem markanten Klangprofil wird in der C. Bechstein Europe Herstellung mit großem Verantwortungsgefühl und Erfahrung für Qualität in jedem Detail gefertigt. Der W. Hoffmann Vision V 158 ist ein robuster, klangstarker Stutzflügel. Die umfangreiche Fertigungsstruktur in Tschechien und das große technische Know-How der ausgesuchten Fachkräfte hauchen den musikalischen Rohedelsteinen durch individuelle handwerkliche Ausformung einen singenden europäischen C",
+  "image": "https://bechstein.com/wp-content/uploads/2026/11/W.Hoffmann-V158_00-2.png",
+  "url": "https://bechstein.com/gebrauchte-instrumente/w-hoffmann-vision-v-158/"
+ },
+ {
   "city": "Frankfurt am Main",
   "city_slug": "frankfurt-am-main",
   "sublocation": "",
@@ -3159,27 +3179,6 @@
   "body": "Schwarz poliert/Chrom mit integrierter Leuchte Baujahr 2017 133 x 65 x 156 cm 2 Jahre Garantie, inkl. 1. Service und Lieferung Raum München EG",
   "image": "https://www.piano-fischer.de/wp-content/uploads/2026/05/Feurich-133-gebr.-MUC.jpg",
   "url": "https://www.piano-fischer.de/shop/gebrauchte/klavier/feurich-133-gebraucht/"
- },
- {
-  "city": "München",
-  "city_slug": "muenchen",
-  "sublocation": "",
-  "dealer": "Piano-Fischer",
-  "brand": "Yamaha",
-  "model": "C 110",
-  "category": "Klavier",
-  "price": 3400,
-  "uvp": 0,
-  "rent": 0,
-  "year": "2002",
-  "finish": "",
-  "width_cm": "148",
-  "height_cm": "110",
-  "depth_cm": "54",
-  "description": "",
-  "body": "Baujahr 2002 110 x 148 x 54 cm 2 Jahre Garantie, inkl. 1. Service und Lieferung Raum München EG",
-  "image": "https://www.piano-fischer.de/wp-content/uploads/2026/10/Yamaha-C-110-gebr.-MUC.jpg",
-  "url": "https://www.piano-fischer.de/shop/gebrauchte/klavier/grotrian-steinweg-modell-110-gebraucht-kopie/"
  },
  {
   "city": "München",
