@@ -294,8 +294,8 @@
   "width_cm": "150",
   "height_cm": "120",
   "depth_cm": "59",
-  "description": "Baujahr 2011 Das Klavier C 120 Tradition der Marke Schimmel ist ein hervorragend verarbeitetes Instrument. Es zeichnet sich durch einen besonders ausgewogenen Klang aus mit einem dazu stimmigen Spielgefühl. Die Klavierbank ist selbstverständlich dabei im Bundle Kommen Sie vorbei und überzeugen Sie sich selbst von diesem einmaligen Angebot. Unser Team begleitet Sie gerne fachlich […]",
-  "body": "Baujahr 2011 Das Klavier C 120 Tradition der Marke Schimmel ist ein hervorragend verarbeitetes Instrument. Es zeichnet sich durch einen besonders ausgewogenen Klang aus mit einem dazu stimmigen Spielgefühl. Die Klavierbank ist selbstverständlich dabei im Bundle Kommen Sie vorbei und überzeugen Sie sich selbst von diesem einmaligen Angebot. Unser Team begleitet Sie gerne fachlich und kompetent. Wir beraten Sie auch gern telefonisch unter Tel. 0821 / 15 20 30 . * Gesamtpreis, Anwendung der Differenzbesteuerung nach §25a UstG, zzgl. Liefer- / Servicekosten",
+  "description": "Baujahr 2011 Das Klavier C 120 Tradition der Marke Schimmel ist ein hervorragend verarbeitetes Instrument. Es zeichnet sich durch einen besonders ausgewogenen Klang aus mit einem dazu stimmigen Spielgefühl. Die Klavierbank ist selbstverständlich dabei im Bundle Kommen Sie vorbei und überzeugen Sie sich selbst von diesem einmaligen Angebot. Unser Team begleitet Sie gerne fachlich und […]",
+  "body": "Baujahr 2011 Das Klavier C 120 Tradition der Marke Schimmel ist ein hervorragend verarbeitetes Instrument. Es zeichnet sich durch einen besonders ausgewogenen Klang aus mit einem dazu stimmigen Spielgefühl. Die Klavierbank ist selbstverständlich dabei im Bundle Kommen Sie vorbei und überzeugen Sie sich selbst von diesem einmaligen Angebot. Unser Team begleitet Sie gerne fachlich und kompetent. Wir beraten Sie auch gern telefonisch unter Tel. 0821 / 15 20 30 . * Gesamtpreis, Anwendung der Differenzbesteuerung nach §25a UstG, Umsatzsteuer nicht gesondert ausweisbar zzgl. Liefer- / Servicekosten",
   "image": "https://bechstein.com/wp-content/uploads/2026/08/Schimmel_C120_Front_800x500__2_.webp",
   "url": "https://bechstein.com/gebrauchte-instrumente/c-120-tradition/"
  },
@@ -3161,5 +3161,26 @@
   "body": "high grade Baujahr 2020 121 x 154 x 62 cm 2 Jahre Garantie, inkl. 1. Service und Lieferung Raum München EG",
   "image": "https://www.piano-fischer.de/wp-content/uploads/2026/09/Yamaha-P-121-HG-Gebr.-MUC.jpg",
   "url": "https://www.piano-fischer.de/shop/gebrauchte/klavier/yamaha-p-121-hg-gebraucht/"
+ },
+ {
+  "city": "München",
+  "city_slug": "muenchen",
+  "sublocation": "",
+  "dealer": "Piano-Fischer",
+  "brand": "Yamaha",
+  "model": "U-1 TA2",
+  "category": "Klavier",
+  "price": 9000,
+  "uvp": 0,
+  "rent": 0,
+  "year": "2019",
+  "finish": "TransAcoustic System",
+  "width_cm": "153",
+  "height_cm": "121",
+  "depth_cm": "62",
+  "description": "",
+  "body": "TransAcoustic System Baujahr 2019 121 x 153 x 62 cm 2 Jahre Garantie, inkl. 1. Service und Lieferung Raum München EG",
+  "image": "https://www.piano-fischer.de/wp-content/uploads/2026/11/Yamaha-U-1-TA2-gebr.MUC_.jpg",
+  "url": "https://www.piano-fischer.de/shop/gebrauchte/klavier/yamaha-u-1-ta2-gebraucht/"
  }
 ]
